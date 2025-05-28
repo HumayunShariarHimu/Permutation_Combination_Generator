@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Permutation & Combination Generator</title>
+  <style>
+    body {
+      margin: 0;
+      padding: 0;
+      font-family: 'Segoe UI', sans-serif;
+      background: linear-gradient(to right, #6a11cb, #2575fc);
+      min-height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      padding: 20px;
+    }
+
+    .container {
+      background: white;
+      border-radius: 20px;
+      padding: 30px;
+      max-width: 800px;
+      width: 100%;
+      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
+    }
+
+    h2 {
+      text-align: center;
+      color: #4b0082;
+      margin-bottom: 20px;
+    }
+
+    input {
+      width: 100%;
+      padding: 15px;
+      font-size: 18px;
+      border: 2px solid #ddd;
+      border-radius: 10px;
+      outline: none;
+      margin-bottom: 15px;
+      transition: 0.3s;
+    }
+
+    input:focus {
+      border-color: #6a11cb;
+    }
+
+    button {
+      width: 100%;
+      padding: 15px;
+      background: linear-gradient(to right, #6a11cb, #2575fc);
+      color: white;
+      font-size: 18px;
+      border: none;
+      border-radius: 10px;
+      cursor: pointer;
+      margin-bottom: 20px;
+      transition: 0.3s;
+    }
+
+    button:hover {
+      opacity: 0.9;
+    }
+
+    .output-container {
+      max-height: 300px;
+      overflow-y: auto;
+      border-top: 2px solid #eee;
+      padding-top: 20px;
+    }
+
+    .output {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(80px, 1fr));
+      gap: 10px;
+    }
+
+    .perm-box {
+      background: #f7f7f7;
+      padding: 10px;
+      border-radius: 8px;
+      text-align: center;
+      font-weight: bold;
+      color: #333;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+      transition: transform 0.2s;
+    }
+
+    .perm-box:hover {
+      background: #e1e1ff;
+      transform: scale(1.05);
+    }
+
+    @media (max-width: 500px) {
+      .perm-box {
+        font-size: 14px;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <div class="container">
+    <h2>Permutation & Combination Generator</h2>
+    <input type="text" id="inputText" placeholder="Enter characters (e.g. ABC123)">
+    <button onclick="generateAllCombinations()">Generate All Possibilities</button>
+    
+    <div class="output-container">
+      <div class="output" id="output"></div>
+    </div>
+  </div>
+
+  <script>
+    function getPermutations(str) {
+      if (str.length === 1) return [str];
+      const perms = [];
+      for (let i = 0; i < str.length; i++) {
+        const char = str[i];
+        const remaining = str.slice(0, i) + str.slice(i + 1);
+        for (const sub of getPermutations(remaining)) {
+          perms.push(char + sub);
+        }
+      }
+      return perms;
+    }
+
+    function generateAllCombinations() {
+      const input = document.getElementById("inputText").value.trim();
+      const output = document.getElementById("output");
+      output.innerHTML = "";
+
+      const resultSet = new Set();
+
+      for (let len = 1; len <= input.length; len++) {
+        function combine(prefix, chars) {
+          if (prefix.length === len) {
+            getPermutations(prefix).forEach(p => resultSet.add(p));
+            return;
+          }
+          for (let i = 0; i < chars.length; i++) {
+            combine(prefix + chars[i], chars.slice(0, i) + chars.slice(i + 1));
+          }
+        }
+        combine("", input);
+      }
+
+      const sortedResults = [...resultSet].sort();
+      sortedResults.forEach(p => {
+        const div = document.createElement("div");
+        div.className = "perm-box";
+        div.textContent = p;
+        output.appendChild(div);
+      });
+    }
+  </script>
+
+</body>
+</html>
